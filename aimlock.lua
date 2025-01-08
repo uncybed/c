@@ -3,6 +3,8 @@
 --  OR
 -- loadstring(HttpGet('https://uncybed.github.io/aimlock.lua'))()
 
+if _G.aimlockmoduleloaded == true then return end
+
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/source.lua'))()
 local players = game:GetService("Players")
 
