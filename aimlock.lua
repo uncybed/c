@@ -153,7 +153,7 @@ coroutine.wrap(function()
 	local runService = game:GetService("RunService")
 	local userInputService = game:GetService("UserInputService")
 	local tweenService = game:GetService("TweenService")
-	local localPlayer = game.Players.LocalPlayer
+	local localPlayer = players.LocalPlayer
 	_G.keyholding = false
 
 	_G.aimbotEnabled = false
@@ -174,7 +174,7 @@ coroutine.wrap(function()
 			maximumDistance = math.huge
 		end)()
 
-		for _, player in pairs(game.Players:GetPlayers()) do
+		for _, player in pairs(players:GetPlayers()) do
 			if player.Name ~= localPlayer.Name and not table.find(_G.exceptionList, player.Name) then
 				if not (_G.teamCheck and player.Team == localPlayer.Team) then
 					if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
