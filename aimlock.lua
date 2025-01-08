@@ -5,7 +5,7 @@
 
 if _G.aimlockmoduleloaded == true then return end
 
-local ver = "v0.0.1"
+local ver = "v0.0.2"
 
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/source.lua'))()
 local players = game:GetService("Players")
