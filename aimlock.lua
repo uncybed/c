@@ -1,7 +1,7 @@
 -- aimlock by cybe42
--- loadstring(game:HttpGet('https://uncybed.github.io/aimlock.lua'))
+-- loadstring(game:HttpGet('https://uncybed.github.io/aimlock.lua'))()
 --  OR
--- loadstring(HttpGet('https://uncybed.github.io/aimlock.lua'))
+-- loadstring(HttpGet('https://uncybed.github.io/aimlock.lua'))()
 
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/source.lua'))()
 local players = game:GetService("Players")
