@@ -5,12 +5,14 @@
 
 if _G.aimlockmoduleloaded == true then return end
 
+local ver = "v0.0.1"
+
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/refs/heads/main/source.lua'))()
 local players = game:GetService("Players")
 
 local Window = Rayfield:CreateWindow({
-	Name = "aimlock",
-	LoadingTitle = "aimlock",
+	Name = "aimlock "..ver,
+	LoadingTitle = "aimlock "..ver,
 	LoadingSubtitle = "by cybe42",
 	ConfigurationSaving = {
 		Enabled = true,
@@ -21,6 +23,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local Tab = Window:CreateTab("Settings", 4483362458) -- Title, Image
+local Tab2 = Window:CreateTab("Finetune", 4483362458)
 
 local Toggle = Tab:CreateToggle({
 	Name = "Toggle",
@@ -118,16 +121,39 @@ local Button2 = Tab:CreateButton({
 	end,
 })
 
+local Toggle2 = Tab2:CreateToggle({
+	Name = "Click Pause",
+	CurrentValue = false,
+	Flag = "clickpause", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		_G.aimlockclickpause = Value
+	end,
+})
+
+local Slider2 = Tab2:CreateSlider({
+	Name = "Click pause delay",
+	Range = {0, 4},
+	Increment = 0.01,
+	Suffix = "seconds",
+	CurrentValue = 0,
+	Flag = "clickpausedelay", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		_G.aimlockclickpausedelay = Value
+	end,
+})
+
 coroutine.wrap(function()
 	if _G.aimlockmoduleloaded == true then
 		return
 	end
 	_G.aimlockmoduleloaded = true
+	_G.aimlockclickpause = false
+	_G.aimlockclickpausedelay = 1
 	local camera = workspace.CurrentCamera
 	local runService = game:GetService("RunService")
 	local userInputService = game:GetService("UserInputService")
 	local tweenService = game:GetService("TweenService")
-	local localPlayer = players.LocalPlayer
+	local localPlayer = game.Players.LocalPlayer
 	_G.keyholding = false
 
 	_G.aimbotEnabled = false
@@ -136,6 +162,8 @@ coroutine.wrap(function()
 	_G.sensitivity = 0 -- how many seconds it takes for the aimbot script to officially lock onto the target's aimpart.
 	_G.exceptionList = {} -- list of players to ignore
 	_G.activationKey = Enum.KeyCode.LeftControl -- key to activate the aimbot
+
+	local aimbotPaused = false -- State for pausing the aimbot
 
 	local function getClosestPlayer()
 		local maximumDistance = math.huge
@@ -146,7 +174,7 @@ coroutine.wrap(function()
 			maximumDistance = math.huge
 		end)()
 
-		for _, player in pairs(players:GetPlayers()) do
+		for _, player in pairs(game.Players:GetPlayers()) do
 			if player.Name ~= localPlayer.Name and not table.find(_G.exceptionList, player.Name) then
 				if not (_G.teamCheck and player.Team == localPlayer.Team) then
 					if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
@@ -171,7 +199,14 @@ coroutine.wrap(function()
 	end
 
 	userInputService.InputBegan:Connect(function(input)
-		if input.KeyCode == _G.activationKey then
+		if _G.aimlockclickpause == true and input.UserInputType == Enum.UserInputType.MouseButton1 then
+			-- Pause aimbot for 2 seconds on left-click
+			if not aimbotPaused then
+				aimbotPaused = true
+				wait(_G.aimlockclickpausedelay)
+				aimbotPaused = false
+			end
+		elseif input.KeyCode == _G.activationKey then
 			_G.keyholding = true
 		end
 	end)
@@ -183,7 +218,7 @@ coroutine.wrap(function()
 	end)
 
 	runService.RenderStepped:Connect(function()
-		if _G.keyholding and _G.aimbotEnabled then
+		if _G.keyholding and _G.aimbotEnabled and not aimbotPaused then
 			local closestPlayer = getClosestPlayer()
 			if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild(_G.aimPart) then
 				tweenService:Create(
